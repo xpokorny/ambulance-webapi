@@ -7,6 +7,10 @@ import (
     "github.com/gin-gonic/gin"
     "github.com/xpokorny/ambulance-webapi/api"
 	"github.com/xpokorny/ambulance-webapi/internal/ambulance_wl"
+	"github.com/xpokorny/ambulance-webapi/internal/db_service"
+    "context"
+    "time"
+    "github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -25,6 +29,7 @@ func main() {
 	handleFunctions := &ambulance_wl.ApiHandleFunctions{
 		AmbulanceConditionsAPI:  ambulance_wl.NewAmbulanceConditionsApi(),
 		AmbulanceWaitingListAPI: ambulance_wl.NewAmbulanceWaitingListApi(),
+		AmbulancesAPI:           ambulance_wl.NewAmbulancesApi(),
 	}
 	ambulance_wl.NewRouterWithGinEngine(engine, *handleFunctions)
     engine.GET("/openapi", api.HandleOpenApi)
