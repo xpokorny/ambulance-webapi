@@ -3,141 +3,130 @@ servers:
   - description: Cluster Endpoint
     url: /api
 info:
-  description: Ambulance Waiting List management for Web-In-Cloud system
+  description: Medical Appointment Scheduling System
   version: "1.0.0"
-  title: Waiting List Api
+  title: Appointment Scheduling Api
   contact:
     email: xpokorny@stuba.sk
   license:
     name: CC BY 4.0
     url: "https://creativecommons.org/licenses/by/4.0/"
 tags:
-- name: ambulanceWaitingList
-  description: Ambulance Waiting List API
-- name: ambulanceConditions
-  description: Patient conditions and symptoms handled in the ambulance
-- name: ambulances
-  description: Ambulance details
+- name: appointments
+  description: Appointment management API
+- name: users
+  description: User management API
+- name: locations
+  description: Medical locations API
 paths:
-  "/waiting-list/{ambulanceId}/entries":
+  /appointments/{userId}:
     get:
       tags:
-        - ambulanceWaitingList
-      summary: Provides the ambulance waiting list
-      operationId: getWaitingListEntries
-      description: By using ambulanceId you get list of entries in ambulance waiting list
+        - appointments
+      summary: Get all appointments for a user
+      operationId: getAppointments
+      description: Use this method to get appointments where user is either patient or creator
       parameters:
         - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
+          name: userId
+          description: ID of the user
           required: true
           schema:
             type: string
+        - in: query
+          name: role
+          description: Filter by role (patient or creator)
+          required: false
+          schema:
+            type: string
+            enum: [patient, creator]
       responses:
         "200":
-          description: value of the waiting list entries
+          description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/WaitingListEntry"
+                  $ref: "#/components/schemas/Appointment"
               examples:
                 response:
-                  $ref: "#/components/examples/WaitingListEntriesExample"
+                  $ref: "#/components/examples/AppointmentsListExample"
+        "400":
+          description: Bad request
         "404":
-          description: Ambulance with such ID does not exist
+          description: Not found
+  /appointments:
     post:
       tags:
-        - ambulanceWaitingList
-      summary: Saves new entry into waiting list
-      operationId: createWaitingListEntry
-      description: Use this method to store new entry into the waiting list.
-      parameters:
-        - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
-          required: true
-          schema:
-            type: string
+        - appointments
+      summary: Create a new appointment
+      operationId: createAppointment
+      description: Use this method to create a new appointment
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WaitingListEntry"
+              $ref: "#/components/schemas/Appointment"
             examples:
               request-sample:
-                $ref: "#/components/examples/WaitingListEntryExample"
-        description: Waiting list entry to store
+                $ref: "#/components/examples/AppointmentExample"
+        description: Appointment details to store
         required: true
       responses:
         "200":
-          description: >-
-            Value of the waiting list entry with re-computed estimated time of
-            ambulance entry
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WaitingListEntry"
+                $ref: "#/components/schemas/Appointment"
               examples:
                 updated-response:
-                  $ref: "#/components/examples/WaitingListEntryExample"
+                  $ref: "#/components/examples/AppointmentExample"
         "400":
-          description: Missing mandatory properties of input object.
+          description: Bad request
         "404":
-          description: Ambulance with such ID does not exists
+          description: Not found
         "409":
-          description: Entry with the specified id already exists
-  "/waiting-list/{ambulanceId}/entries/{entryId}":
+          description: Already exists
+  /appointments/{appointmentId}:
     get:
       tags:
-        - ambulanceWaitingList
-      summary: Provides details about waiting list entry
-      operationId: getWaitingListEntry
-      description: >-
-        By using ambulanceId and entryId you can details of particular entry
-        item ambulance.
+        - appointments
+      summary: Get appointment details
+      operationId: getAppointment
+      description: Use this method to get details of a specific appointment
       parameters:
         - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: entryId
-          description: pass the id of the particular entry in the waiting list
+          name: appointmentId
+          description: ID of the appointment
           required: true
           schema:
             type: string
       responses:
         "200":
-          description: value of the waiting list entries
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WaitingListEntry"
+                $ref: "#/components/schemas/Appointment"
               examples:
                 response:
-                  $ref: "#/components/examples/WaitingListEntryExample"
+                  $ref: "#/components/examples/AppointmentExample"
+        "400":
+          description: Bad request
         "404":
-          description: Ambulance or Entry with such ID does not exists
+          description: Not found
     put:
       tags:
-        - ambulanceWaitingList
-      summary: Updates specific entry
-      operationId: updateWaitingListEntry
-      description: Use this method to update content of the waiting list entry.
+        - appointments
+      summary: Update an appointment
+      operationId: updateAppointment
+      description: Use this method to update an existing appointment
       parameters:
         - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: entryId
-          description: pass the id of the particular entry in the waiting list
+          name: appointmentId
+          description: ID of the appointment
           required: true
           schema:
             type: string
@@ -145,335 +134,266 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/WaitingListEntry"
+              $ref: "#/components/schemas/Appointment"
             examples:
               request:
-                $ref: "#/components/examples/WaitingListEntryExample"
-        description: Waiting list entry to update
+                $ref: "#/components/examples/AppointmentExample"
+        description: Updated appointment details
         required: true
       responses:
         "200":
-          description: >-
-            value of the waiting list entry with re-computed estimated time of
-            ambulance entry
+          description: Success
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/WaitingListEntry"
+                $ref: "#/components/schemas/Appointment"
               examples:
-                response:
-                  $ref: "#/components/examples/WaitingListEntryExample"
-        "403":
-          description: >-
-            Value of the entryID and the data id is mismatching. Details are
-            provided in the response body.
+                updated-response:
+                  $ref: "#/components/examples/AppointmentExample"
+        "400":
+          description: Bad request
         "404":
-          description: Ambulance or Entry with such ID does not exists
+          description: Not found
+        "409":
+          description: Already exists
     delete:
       tags:
-        - ambulanceWaitingList
-      summary: Deletes specific entry
-      operationId: deleteWaitingListEntry
-      description: Use this method to delete the specific entry from the waiting list.
+        - appointments
+      summary: Delete an appointment
+      operationId: deleteAppointment
+      description: Use this method to delete a specific appointment
       parameters:
         - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
-          required: true
-          schema:
-            type: string
-        - in: path
-          name: entryId
-          description: pass the id of the particular entry in the waiting list
+          name: appointmentId
+          description: ID of the appointment
           required: true
           schema:
             type: string
       responses:
         "204":
-          description: Item deleted
+          description: Success
+        "400":
+          description: Bad request
         "404":
-          description: Ambulance or Entry with such ID does not exists
-  "/waiting-list/{ambulanceId}/condition":
+          description: Not found
+  /users:
     get:
       tags:
-        - ambulanceConditions
-      summary: Provides the list of conditions associated with ambulance
-      operationId: getConditions
-      description: By using ambulanceId you get list of predefined conditions
+        - users
+      summary: Get all users
+      operationId: getUsers
+      description: Use this method to get all users
       parameters:
-        - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
-          required: true
+        - in: query
+          name: role
+          description: Filter by role (patient or creator)
+          required: false
           schema:
             type: string
+            enum: [patient, doctor]
       responses:
         "200":
-          description: value of the predefined conditions
+          description: Success
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/Condition"
-              examples:
-                response:
-                  $ref: "#/components/examples/ConditionsListExample"
-        "404":
-          description: Ambulance with such ID does not exists
-  "/ambulance":
-    post:
-      tags:
-        - ambulances
-      summary: Saves new ambulance definition
-      operationId: createAmbulance
-      description: Use this method to initialize new ambulance in the system
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Ambulance"
-            examples:
-              request-sample:
-                $ref: "#/components/examples/AmbulanceExample"
-        description: Ambulance details to store
-        required: true
-      responses:
-        "200":
-          description: >-
-            Value of stored ambulance
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/Ambulance"
-              examples:
-                updated-response:
-                  $ref: "#/components/examples/AmbulanceExample"
+                  $ref: "#/components/schemas/User"
         "400":
-          description: Missing mandatory properties of input object.
-        "409":
-          description: Entry with the specified id already exists
-  "/ambulance/{ambulanceId}":
-    delete:
+          description: Bad request
+  /users/{userId}:
+    get:
       tags:
-        - ambulances
-      summary: Deletes specific ambulance
-      operationId: deleteAmbulance
-      description: Use this method to delete the specific ambulance from the system.
+        - users
+      summary: Get user details
+      operationId: getUser
+      description: Use this method to get details of a specific user
       parameters:
         - in: path
-          name: ambulanceId
-          description: pass the id of the particular ambulance
+          name: userId
+          description: ID of the user
           required: true
           schema:
             type: string
       responses:
-        "204":
-          description: Item deleted
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "400":
+          description: Bad request
         "404":
-          description: Ambulance with such ID does not exist
+          description: Not found
+  /locations:
+    get:
+      tags:
+        - locations
+      summary: Get all locations
+      operationId: getLocations
+      description: Use this method to get all locations
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Location"
+        "400":
+          description: Bad request
 components:
   schemas:
-    WaitingListEntry:
+    Appointment:
       type: object
-      required: [id, patientId, waitingSince, estimatedDurationMinutes]
+      required: [id, patient, doctor, location, dateTime, createdBy]
       properties:
         id:
           type: string
-          example: x321ab3
-          description: Unique id of the entry in this waiting list
-        name:
-          type: string
-          example: Jožko Púčik
-          description: Name of patient in waiting list
-        patientId:
-          type: string
-          example: 460527-jozef-pucik
-          description: Unique identifier of the patient known to Web-In-Cloud system
-        waitingSince:
-          type: string
-          format: date-time
-          example: "2038-12-24T10:05:00Z"
-          description: Timestamp since when the patient entered the waiting list
-        estimatedStart:
+          description: Unique identifier of the appointment
+        patient:
+          $ref: '#/components/schemas/User'
+          description: Patient details
+        doctor:
+          $ref: '#/components/schemas/User'
+          description: Doctor details
+        location:
+          $ref: '#/components/schemas/Location'
+          description: Location details
+        dateTime:
           type: string
           format: date-time
-          example: "2038-12-24T10:35:00Z"
-          description: Estimated time of entering ambulance. Ignored on post.
-        estimatedDurationMinutes:
-          type: integer
-          format: int32
-          example: 15
-          description: >-
-            Estimated duration of ambulance visit. If not provided then it will
-            be computed based on condition and ambulance settings
-        condition:
-          $ref: "#/components/schemas/Condition"
-      example:
-        $ref: "#/components/examples/WaitingListEntryExample"
-    Condition:
-      description: "Describes disease, symptoms, or other reasons of patient   visit"
-      required:
-        - value
-      properties:
-        value:
-          type: string
-          example: Teploty
-        code:
-          type: string
-          example: subfebrilia
-        reference:
-          type: string
-          format: url
-          example: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-          description: Link to encyclopedical explanation of the patient's condition
-        typicalDurationMinutes:
-          type: integer
-          format: int32
-          example: 20
-      example:
-        $ref: "#/components/examples/ConditionExample"
-    Ambulance:
+          description: Date and time of the appointment
+        createdBy:
+          $ref: '#/components/schemas/User'
+          description: User who created the appointment
+    User:
       type: object
-      required: [ "id", "name", "roomNumber"]
+      required: [id, name, role]
       properties:
         id:
           type: string
-          example: dentist-warenova
-          description: Unique identifier of the ambulance
+          description: Unique identifier of the user
         name:
           type: string
-          example: Zubná ambulancia Dr. Warenová
-          description: Human readable display name of the ambulance
-        roomNumber:
+          description: Full name of the user
+        role:
           type: string
-          example: 356 - 3.posch
-        waitingList:
-          type: array
-          items:
-            $ref: '#/components/schemas/WaitingListEntry'
-        predefinedConditions:
-          type: array
-          items:
-            $ref: '#/components/schemas/Condition'
-      example:
-          $ref: "#/components/examples/AmbulanceExample"
+          enum: [patient, doctor]
+          description: Role of the user
+    Location:
+      type: object
+      required: [id, name, address]
+      properties:
+        id:
+          type: string
+          description: Unique identifier of the location
+        name:
+          type: string
+          description: Name of the medical facility
+        address:
+          type: string
+          description: Physical address of the location
   examples:
-    WaitingListEntryExample:
-      summary: Ľudomír Zlostný waiting
-      description: |
-        Entry represents a patient waiting in the ambulance prep room with
-        defined symptoms
+    AppointmentExample:
+      summary: Sample appointment
+      description: Example of an appointment
       value:
-        id: x321ab3
-        name: Ľudomír Zlostný
-        patientId: 74895-ludomir-zlostny
-        waitingSince: "2038-12-24T10:05:00.000Z"
-        estimatedStart: "2038-12-24T10:35:00.000Z"
-        estimatedDurationMinutes: 15
-        condition:
-          value: Nevoľnosť
-          code: nausea
-          reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-    ConditionExample:
-      summary: Conditions and symptoms
-      description: list of few symptoms that can be chosen by patients
+        id: "apt-001"
+        patient:
+          id: "user-001"
+          name: "John Doe"
+          role: "patient"
+        doctor:
+          id: "user-002"
+          name: "Dr. Jane Smith"
+          role: "doctor"
+        location:
+          id: "loc-001"
+          name: "City Hospital"
+          address: "123 Medical St, City"
+        dateTime: "2024-03-20T10:00:00Z"
+        createdBy:
+          id: "user-002"
+          name: "Dr. Jane Smith"
+          role: "doctor"
+    AppointmentsListExample:
+      summary: List of appointments
+      description: Example list containing 2 appointments
       value:
-        valuee: Teploty
-        code: subfebrilia
-        reference: >-
-          https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/
-    WaitingListEntriesExample:
-      summary: List of waiting patients
-      description: |
-        Example waiting list containing 2 patients
+        - id: "apt-001"
+          patient:
+            id: "user-001"
+            name: "John Doe"
+            role: "patient"
+          doctor:
+            id: "user-002"
+            name: "Dr. Jane Smith"
+            role: "doctor"
+          location:
+            id: "loc-001"
+            name: "City Hospital"
+            address: "123 Medical St, City"
+          dateTime: "2024-03-20T10:00:00Z"
+          createdBy:
+            id: "user-002"
+            name: "Dr. Jane Smith"
+            role: "doctor"
+        - id: "apt-002"
+          patient:
+            id: "user-003"
+            name: "Alice Johnson"
+            role: "patient"
+          doctor:
+            id: "user-002"
+            name: "Dr. Jane Smith"
+            role: "doctor"
+          location:
+            id: "loc-001"
+            name: "City Hospital"
+            address: "123 Medical St, City"
+          dateTime: "2024-03-20T11:00:00Z"
+          createdBy:
+            id: "user-003"
+            name: "Alice Johnson"
+            role: "patient"
+    UserExample:
+      summary: Sample user
+      description: Example of a user
       value:
-      - id: x321ab3
-        name: Jožko Púčik
-        patientId: 460527-jozef-pucik
-        waitingSince: "2038-12-24T10:05:00.000Z"
-        estimatedStart: "2038-12-24T10:35:00.000Z"
-        estimatedDurationMinutes: 15
-        condition:
-          value: Teploty
-          code: subfebrilia
-          reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-      - id: x321ab4
-        name: Ferdinand Trety
-        patientId: 780907-ferdinand-tre
-        waitingSince: "2038-12-24T10:25:00.000Z"
-        estimatedStart: "2038-12-24T10:50:00.000Z"
-        estimatedDurationMinutes: 25
-        condition:
-          value: Nevoľnosť
-          code: nausea
-          reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-    AmbulanceExample:
-      summary: Sample GP ambulance
-      description: |
-        Example of GP ambulance with waiting list and predefined conditions
+        id: "user-001"
+        name: "John Doe"
+        role: "patient"
+    UsersListExample:
+      summary: List of users
+      description: Example list containing 3 users
       value:
-        id: gp-warenova
-        name: Ambulancia všeobecného lekárstva Dr. Warenová
-        roomNumber: 356 - 3.posch
-        waitingList:
-          - id: x321ab3
-            name: Jožko Púčik
-            patientId: 460527-jozef-pucik
-            waitingSince: "2038-12-24T10:05:00.000Z"
-            estimatedStart: "2038-12-24T10:35:00.000Z"
-            estimatedDurationMinutes: 15
-            condition:
-            value: Teploty
-            code: subfebrilia
-            reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-          - id: x321ab4
-            name: Ferdinand Trety
-            patientId: 780907-ferdinand-tre
-            waitingSince: "2038-12-24T10:25:00.000Z"
-            estimatedStart: "2038-12-24T10:50:00.000Z"
-            estimatedDurationMinutes: 25
-            condition:
-            value: Nevoľnosť
-            code: nausea
-            reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-        predefinedConditions:
-          - value: Teploty
-            code: subfebrilia
-            reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-            typicalDurationMinutes: 20
-          - value: Nevoľnosť
-            code: nausea
-            reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-            typicalDurationMinutes: 45
-          - value: Kontrola
-            code: followup
-            typicalDurationMinutes: 15
-          - value: Administratívny úkon
-            code: administration
-            typicalDurationMinutes: 10
-          - value: Odber krvi
-            code: blood-test
-            typicalDurationMinutes: 10
-    ConditionsListExample:
-      summary: Sample of GP ambulance conditions
-      description: |
-        Example list of possible conditions, symptoms, and visit reasons
+        - id: "user-001"
+          name: "John Doe"
+          role: "patient"
+        - id: "user-002"
+          name: "Dr. Jane Smith"
+          role: "doctor"
+        - id: "user-003"
+          name: "Alice Johnson"
+          role: "patient"
+    LocationExample:
+      summary: Sample location
+      description: Example of a medical location
       value:
-        - value: Teploty
-          code: subfebrilia
-          reference: "https://zdravoteka.sk/priznaky/zvysena-telesna-teplota/"
-          typicalDurationMinutes: 20
-        - value: Nevoľnosť
-          code: nausea
-          reference: "https://zdravoteka.sk/priznaky/nevolnost/"
-          typicalDurationMinutes: 45
-        - value: Kontrola
-          code: followup
-          typicalDurationMinutes: 15
-        - value: Administratívny úkon
-          code: administration
-          typicalDurationMinutes: 10
-        - value: Odber krvi
-          code: blood-test
-          typicalDurationMinutes: 10
+        id: "loc-001"
+        name: "City Hospital"
+        address: "123 Medical St, City"
+    LocationsListExample:
+      summary: List of locations
+      description: Example list containing 2 locations
+      value:
+        - id: "loc-001"
+          name: "City Hospital"
+          address: "123 Medical St, City"
+        - id: "loc-002"
+          name: "Medical Center"
+          address: "456 Health Ave, Town"
