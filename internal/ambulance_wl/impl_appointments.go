@@ -54,7 +54,7 @@ func (o implAppointmentsAPI) CreateAppointment(c *gin.Context) {
         return
     }
 
-    if appointment.Id == "" {
+    if appointment.Id == "" || appointment.Id == "@new" {
         appointment.Id = uuid.New().String()
     }
 
