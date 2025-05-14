@@ -1,7 +1,7 @@
 /*
- * Waiting List Api
+ * Appointment Scheduling Api
  *
- * Ambulance Waiting List management for Web-In-Cloud system
+ * Medical Appointment Scheduling System
  *
  * API version: 1.0.0
  * Contact: xpokorny@stuba.sk
@@ -63,63 +63,63 @@ func DefaultHandleFunc(c *gin.Context) {
 
 type ApiHandleFunctions struct {
 
-	// Routes for the AmbulanceConditionsAPI part of the API
-	AmbulanceConditionsAPI AmbulanceConditionsAPI
-	// Routes for the AmbulanceWaitingListAPI part of the API
-	AmbulanceWaitingListAPI AmbulanceWaitingListAPI
-	// Routes for the AmbulancesAPI part of the API
-	AmbulancesAPI AmbulancesAPI
+	// Routes for the AppointmentsAPI part of the API
+	AppointmentsAPI AppointmentsAPI
+	// Routes for the LocationsAPI part of the API
+	LocationsAPI LocationsAPI
+	// Routes for the UsersAPI part of the API
+	UsersAPI UsersAPI
 }
 
 func getRoutes(handleFunctions ApiHandleFunctions) []Route {
 	return []Route{ 
 		{
-			"GetConditions",
-			http.MethodGet,
-			"/api/waiting-list/:ambulanceId/condition",
-			handleFunctions.AmbulanceConditionsAPI.GetConditions,
-		},
-		{
-			"CreateWaitingListEntry",
+			"CreateAppointment",
 			http.MethodPost,
-			"/api/waiting-list/:ambulanceId/entries",
-			handleFunctions.AmbulanceWaitingListAPI.CreateWaitingListEntry,
+			"/api/appointments",
+			handleFunctions.AppointmentsAPI.CreateAppointment,
 		},
 		{
-			"DeleteWaitingListEntry",
+			"DeleteAppointment",
 			http.MethodDelete,
-			"/api/waiting-list/:ambulanceId/entries/:entryId",
-			handleFunctions.AmbulanceWaitingListAPI.DeleteWaitingListEntry,
+			"/api/appointments/:appointmentId",
+			handleFunctions.AppointmentsAPI.DeleteAppointment,
 		},
 		{
-			"GetWaitingListEntries",
+			"GetAppointment",
 			http.MethodGet,
-			"/api/waiting-list/:ambulanceId/entries",
-			handleFunctions.AmbulanceWaitingListAPI.GetWaitingListEntries,
+			"/api/appointments/:appointmentId",
+			handleFunctions.AppointmentsAPI.GetAppointment,
 		},
 		{
-			"GetWaitingListEntry",
+			"GetAppointments",
 			http.MethodGet,
-			"/api/waiting-list/:ambulanceId/entries/:entryId",
-			handleFunctions.AmbulanceWaitingListAPI.GetWaitingListEntry,
+			"/api/appointments",
+			handleFunctions.AppointmentsAPI.GetAppointments,
 		},
 		{
-			"UpdateWaitingListEntry",
+			"UpdateAppointment",
 			http.MethodPut,
-			"/api/waiting-list/:ambulanceId/entries/:entryId",
-			handleFunctions.AmbulanceWaitingListAPI.UpdateWaitingListEntry,
+			"/api/appointments/:appointmentId",
+			handleFunctions.AppointmentsAPI.UpdateAppointment,
 		},
 		{
-			"CreateAmbulance",
-			http.MethodPost,
-			"/api/ambulance",
-			handleFunctions.AmbulancesAPI.CreateAmbulance,
+			"GetLocations",
+			http.MethodGet,
+			"/api/locations",
+			handleFunctions.LocationsAPI.GetLocations,
 		},
 		{
-			"DeleteAmbulance",
-			http.MethodDelete,
-			"/api/ambulance/:ambulanceId",
-			handleFunctions.AmbulancesAPI.DeleteAmbulance,
+			"GetUser",
+			http.MethodGet,
+			"/api/users/:userId",
+			handleFunctions.UsersAPI.GetUser,
+		},
+		{
+			"GetUsers",
+			http.MethodGet,
+			"/api/users",
+			handleFunctions.UsersAPI.GetUsers,
 		},
 	}
 }

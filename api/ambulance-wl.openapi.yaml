@@ -19,43 +19,6 @@ tags:
 - name: locations
   description: Medical locations API
 paths:
-  /appointments/{userId}:
-    get:
-      tags:
-        - appointments
-      summary: Get all appointments for a user
-      operationId: getAppointments
-      description: Use this method to get appointments where user is either patient or creator
-      parameters:
-        - in: path
-          name: userId
-          description: ID of the user
-          required: true
-          schema:
-            type: string
-        - in: query
-          name: role
-          description: Filter by role (patient or creator)
-          required: false
-          schema:
-            type: string
-            enum: [patient, creator]
-      responses:
-        "200":
-          description: Success
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Appointment"
-              examples:
-                response:
-                  $ref: "#/components/examples/AppointmentsListExample"
-        "400":
-          description: Bad request
-        "404":
-          description: Not found
   /appointments:
     post:
       tags:
@@ -89,6 +52,40 @@ paths:
           description: Not found
         "409":
           description: Already exists
+    get:
+      tags:
+        - appointments
+      summary: Get all appointments
+      operationId: getAppointments
+      description: Use this method to get all appointments, or filter by user
+      parameters:
+        - in: query
+          name: userId
+          description: ID of the user (optional, filters appointments where user is patient or creator)
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: role
+          description: Filter by role (patient or creator)
+          required: false
+          schema:
+            type: string
+            enum: [patient, creator]
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Appointment"
+              examples:
+                response:
+                  $ref: "#/components/examples/AppointmentsListExample"
+        "400":
+          description: Bad request  
   /appointments/{appointmentId}:
     get:
       tags:
@@ -200,6 +197,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/User"
+              examples:
+                response:
+                  $ref: "#/components/examples/UsersListExample"
         "400":
           description: Bad request
   /users/{userId}:
@@ -223,6 +223,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+              examples:
+                response:
+                  $ref: "#/components/examples/UserExample"
         "400":
           description: Bad request
         "404":
@@ -243,6 +246,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Location"
+              examples:
+                response:
+                  $ref: "#/components/examples/LocationsListExample"
         "400":
           description: Bad request
 components:
